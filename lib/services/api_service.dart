@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:test_kobkiat/models/article_model.dart';
 import 'package:test_kobkiat/utils/api_constants.dart';
 
 class ApiService {
@@ -9,11 +10,15 @@ class ApiService {
     _dio.options.headers['x-rapidapi-key'] = ApiConstants.rapidApiKey;
   }
 
-  Future<Map<String, dynamic>> fetchNewsByCategory(String category) async {
+  Future<List<ArticleModel>> fetchNewsByCategory(String category) async {
     try {
       final url = ApiConstants.newsByCategoryUrl(category);
       final response = await _dio.get(url);
-      return response.data;
+
+      final List<dynamic> jsonResponse = response.data['items'];
+      return jsonResponse
+          .map((json) => ArticleModel.fromJson(json as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw Exception('Failed to load news: ${e.message}');
     }
