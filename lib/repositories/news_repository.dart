@@ -1,24 +1,23 @@
 import 'package:hive/hive.dart';
-import 'package:test_kobkiat/models/article_model.dart';
+import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/services/api_service.dart';
 
 class NewsRepository {
   final ApiService _apiService;
-  final Box<ArticleModel> _newsBox;
+  final Box<List<NewsModel>> _newsBox;
 
   NewsRepository(this._apiService, this._newsBox);
 
-  Future<List<ArticleModel>> getNews() async {
-    final newsList = await _apiService.fetchNewsByCategory('latest');
+  Future<List<NewsModel>> getNews(String category) async {
+    final newsList = await _apiService.fetchNewsByCategory(category);
 
-    for (var news in newsList) {
-      await _newsBox.add(news);
-    }
+    await _newsBox.put(category, newsList);
 
     return newsList;
   }
 
-  List<ArticleModel> getNewsFromLocal() {
-    return _newsBox.values.toList();
+  List<NewsModel> getNewsFromLocal(String category) {
+    final newsList = _newsBox.get(category);
+    return newsList ?? [];
   }
 }

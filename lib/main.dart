@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'package:test_kobkiat/models/article_model.dart';
+import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/services/api_service.dart';
 import 'package:test_kobkiat/repositories/news_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter();
+  final appDocumentDir =
+      await getApplicationDocumentsDirectory(); // Use the function here
+  Hive.init(appDocumentDir.path);
 
-  // Register the adapters
-  Hive.registerAdapter(ImagesAdapter());
-  Hive.registerAdapter(SubnewsAdapter());
-  Hive.registerAdapter(ArticleModelAdapter());
+  Hive.registerAdapter(NewsModelAdapter());
 
-  final newsBox = await Hive.openBox<ArticleModel>('newsBox');
+  final newsBox = await Hive.openBox<List<NewsModel>>('newsBox');
 
-  // Create instances of your services
   final apiService = ApiService();
   final newsRepository = NewsRepository(apiService, newsBox);
 
@@ -52,20 +50,12 @@ class NewsScreen extends StatefulWidget {
 }
 
 class _NewsScreenState extends State<NewsScreen> {
-  late Future<List<ArticleModel>> _newsFuture;
+  late Future<List<NewsModel>> _newsFuture;
 
   @override
   void initState() {
     super.initState();
-    _newsFuture = _loadNews();
-  }
-
-  Future<List<ArticleModel>> _loadNews() async {
-    try {
-      return await widget.newsRepository.getNews();
-    } catch (e) {
-      return widget.newsRepository.getNewsFromLocal();
-    }
+    _newsFuture = widget.newsRepository.getNews('latest');
   }
 
   @override
@@ -74,7 +64,7 @@ class _NewsScreenState extends State<NewsScreen> {
       appBar: AppBar(
         title: Text('News App'),
       ),
-      body: FutureBuilder<List<ArticleModel>>(
+      body: FutureBuilder<List<NewsModel>>(
         future: _newsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
