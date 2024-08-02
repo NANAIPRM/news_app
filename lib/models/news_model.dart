@@ -1,11 +1,11 @@
 import 'package:hive/hive.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-part 'article_model.g.dart';
+part 'news_model.g.dart';
 
 @HiveType(typeId: 0)
 @JsonSerializable(explicitToJson: true)
-class ArticleModel extends HiveObject {
+class NewsModel extends HiveObject {
   @HiveField(0)
   final String title;
 
@@ -30,7 +30,7 @@ class ArticleModel extends HiveObject {
   @HiveField(7)
   final List<Subnews>? subnews;
 
-  ArticleModel({
+  NewsModel({
     required this.title,
     required this.snippet,
     required this.publisher,
@@ -41,7 +41,7 @@ class ArticleModel extends HiveObject {
     List<Subnews>? subnews,
   }) : subnews = hasSubnews ? subnews : null;
 
-  factory ArticleModel.fromJson(Map<String, dynamic> json) {
+  factory NewsModel.fromJson(Map<String, dynamic> json) {
     final hasSubnews = json['hasSubnews'] as bool;
     final subnewsList = hasSubnews
         ? (json['subnews'] as List<dynamic>?)
@@ -49,7 +49,7 @@ class ArticleModel extends HiveObject {
             .toList()
         : null;
 
-    return ArticleModel(
+    return NewsModel(
       title: json['title'] as String,
       snippet: json['snippet'] as String,
       publisher: json['publisher'] as String,
@@ -64,7 +64,7 @@ class ArticleModel extends HiveObject {
   }
 
   Map<String, dynamic> toJson() {
-    final json = _$ArticleModelToJson(this);
+    final json = _$NewsModelToJson(this);
     if (!hasSubnews) {
       json['subnews'] = null;
     }

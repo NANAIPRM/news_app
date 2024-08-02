@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'article_model.dart';
+part of 'news_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ArticleModelAdapter extends TypeAdapter<ArticleModel> {
+class NewsModelAdapter extends TypeAdapter<NewsModel> {
   @override
   final int typeId = 0;
 
   @override
-  ArticleModel read(BinaryReader reader) {
+  NewsModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ArticleModel(
+    return NewsModel(
       title: fields[0] as String,
       snippet: fields[1] as String,
       publisher: fields[2] as String,
@@ -29,7 +29,7 @@ class ArticleModelAdapter extends TypeAdapter<ArticleModel> {
   }
 
   @override
-  void write(BinaryWriter writer, ArticleModel obj) {
+  void write(BinaryWriter writer, NewsModel obj) {
     writer
       ..writeByte(8)
       ..writeByte(0)
@@ -56,7 +56,7 @@ class ArticleModelAdapter extends TypeAdapter<ArticleModel> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ArticleModelAdapter &&
+      other is NewsModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
@@ -151,7 +151,7 @@ class SubnewsAdapter extends TypeAdapter<Subnews> {
 // JsonSerializableGenerator
 // **************************************************************************
 
-ArticleModel _$ArticleModelFromJson(Map<String, dynamic> json) => ArticleModel(
+NewsModel _$NewsModelFromJson(Map<String, dynamic> json) => NewsModel(
       title: json['title'] as String,
       snippet: json['snippet'] as String,
       publisher: json['publisher'] as String,
@@ -166,8 +166,7 @@ ArticleModel _$ArticleModelFromJson(Map<String, dynamic> json) => ArticleModel(
           .toList(),
     );
 
-Map<String, dynamic> _$ArticleModelToJson(ArticleModel instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$NewsModelToJson(NewsModel instance) => <String, dynamic>{
       'title': instance.title,
       'snippet': instance.snippet,
       'publisher': instance.publisher,
