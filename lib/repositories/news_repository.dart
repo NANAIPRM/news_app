@@ -1,23 +1,34 @@
-import 'package:hive/hive.dart';
+import 'package:test_kobkiat/helpers/news_db.dart';
 import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/services/api_service.dart';
 
 class NewsRepository {
   final ApiService _apiService;
-  final Box<List<NewsModel>> _newsBox;
+  final DatabaseHelper _dbHelper;
 
-  NewsRepository(this._apiService, this._newsBox);
+  NewsRepository(this._apiService, this._dbHelper);
 
   Future<List<NewsModel>> getNews(String category) async {
+    // Fetch news from the API
     final newsList = await _apiService.fetchNewsByCategory(category);
 
-    await _newsBox.put(category, newsList);
+    // Save news data to local database
+    await _saveNewsToLocal(newsList, category);
 
     return newsList;
   }
 
-  List<NewsModel> getNewsFromLocal(String category) {
-    final newsList = _newsBox.get(category);
-    return newsList ?? [];
+  Future<void> _saveNewsToLocal(
+      List<NewsModel> newsList, String category) async {
+    for (var news in newsList) {
+      await _dbHelper.insertNews(news, category);
+    }
+  }
+
+  Future<List<NewsModel>> getNewsFromLocal(String category) async {
+    // Retrieve news data from local database
+    final newsList = await _dbHelper.getNewsByCategory(category);
+
+    return newsList.isNotEmpty ? newsList : [];
   }
 }

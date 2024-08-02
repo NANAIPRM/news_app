@@ -8,6 +8,7 @@ class ApiService {
   ApiService() {
     _dio.options.headers['x-rapidapi-host'] = ApiConstants.rapidApiHost;
     _dio.options.headers['x-rapidapi-key'] = ApiConstants.rapidApiKey;
+    _dio.options.queryParameters['lr'] = 'en-US';
   }
 
   Future<List<NewsModel>> fetchNewsByCategory(String category) async {

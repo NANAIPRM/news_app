@@ -11,17 +11,20 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
     on<LoadNews>(_onLoadNews);
   }
 
-  void _onLoadNews(LoadNews event, Emitter<NewsState> emit) async {
+  Future<void> _onLoadNews(LoadNews event, Emitter<NewsState> emit) async {
     try {
       emit(state.copyWith(loading: true));
+
       List<NewsModel> newsList =
-          _newsRepository.getNewsFromLocal(event.category);
+          await _newsRepository.getNewsFromLocal(event.category);
+
       if (newsList.isEmpty) {
         newsList = await _newsRepository.getNews(event.category);
       }
+
       emit(state.copyWith(loading: false, news: newsList));
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(loading: false, error: e.toString()));
     }
   }
 }
