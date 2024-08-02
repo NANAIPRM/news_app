@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:test_kobkiat/bloc/news/news_bloc.dart';
-import 'package:test_kobkiat/helpers/news_db.dart';
+import 'package:test_kobkiat/bloc/news/news_event.dart';
+import 'package:test_kobkiat/services/database_helper.dart';
 import 'package:test_kobkiat/news_page.dart';
 import 'package:test_kobkiat/repositories/news_repository.dart';
 import 'package:test_kobkiat/services/api_service.dart';
@@ -22,10 +25,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NewsBloc(newsRepository),
-      child: const MaterialApp(
-        home: NewsPage(),
+    return AdaptiveTheme(
+      light: ThemeData.light().copyWith(
+        textTheme: GoogleFonts.aBeeZeeTextTheme(
+          ThemeData.light().textTheme,
+        ),
+      ),
+      dark: ThemeData.dark().copyWith(
+        textTheme: GoogleFonts.aBeeZeeTextTheme(
+          ThemeData.dark().textTheme,
+        ),
+      ),
+      initial: AdaptiveThemeMode.dark,
+      builder: (theme, darkTheme) => BlocProvider(
+        create: (context) =>
+            NewsBloc(newsRepository)..add(const LoadNews('latest')),
+        child: MaterialApp(
+          theme: darkTheme,
+          darkTheme: darkTheme,
+          themeMode: ThemeMode.dark,
+          home: const NewsPage(),
+        ),
       ),
     );
   }

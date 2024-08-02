@@ -50,7 +50,7 @@ class Subnews {
   final String publisher;
   final String timestamp;
   final String newsUrl;
-  final Images images;
+  final Images? images;
 
   Subnews({
     required this.title,
@@ -58,7 +58,7 @@ class Subnews {
     required this.publisher,
     required this.timestamp,
     required this.newsUrl,
-    required this.images,
+    this.images,
   });
 
   factory Subnews.fromJson(Map<String, dynamic> json) =>

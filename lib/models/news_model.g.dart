@@ -48,7 +48,9 @@ Subnews _$SubnewsFromJson(Map<String, dynamic> json) => Subnews(
       publisher: json['publisher'] as String,
       timestamp: json['timestamp'] as String,
       newsUrl: json['newsUrl'] as String,
-      images: Images.fromJson(json['images'] as Map<String, dynamic>),
+      images: json['images'] == null
+          ? null
+          : Images.fromJson(json['images'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$SubnewsToJson(Subnews instance) => <String, dynamic>{

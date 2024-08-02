@@ -1,4 +1,4 @@
-import 'package:test_kobkiat/helpers/news_db.dart';
+import 'package:test_kobkiat/services/database_helper.dart';
 import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/services/api_service.dart';
 
@@ -9,19 +9,49 @@ class NewsRepository {
   NewsRepository(this._apiService, this._dbHelper);
 
   Future<List<NewsModel>> getNews(String category) async {
-    // Fetch news from the API
-    final newsList = await _apiService.fetchNewsByCategory(category);
+    try {
+      // Fetch news from the API
+      final newsList = await _apiService.fetchNewsByCategory(category);
 
-    // Save news data to local database
-    await _saveNewsToLocal(newsList, category);
+      // Check if the newsList is not empty
+      if (newsList.isNotEmpty) {
+        // Save news data to local database
 
-    return newsList;
+        await _saveNewsToLocal(newsList, category);
+
+        print('News for category $category saved successfully');
+      } else {
+        print('No news found for category $category');
+      }
+
+      return newsList;
+    } catch (e) {
+      print('Error fetching or saving news for category $category: $e');
+      return [];
+    }
   }
 
   Future<void> _saveNewsToLocal(
       List<NewsModel> newsList, String category) async {
-    for (var news in newsList) {
-      await _dbHelper.insertNews(news, category);
+    try {
+      for (var news in newsList) {
+        // Log the news object or any relevant details
+        print('Saving news: ${news.toJson()}');
+
+        // Ensure that the category is valid
+        if (category == null || category.isEmpty) {
+          throw ArgumentError('Category cannot be null or empty');
+        }
+
+        await _dbHelper.insertNews(news, category);
+      }
+    } catch (e, stackTrace) {
+      // Log the error and stack trace for better debugging
+      print('Error saving news to local storage: $e');
+      print('Stack trace: $stackTrace');
+
+      // Optionally, you can rethrow the error or handle it differently
+      // rethrow;
     }
   }
 

@@ -17,6 +17,7 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
 
       List<NewsModel> newsList =
           await _newsRepository.getNewsFromLocal(event.category);
+      print('eiei:${newsList}');
 
       if (newsList.isEmpty) {
         newsList = await _newsRepository.getNews(event.category);

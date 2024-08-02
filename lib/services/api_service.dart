@@ -12,6 +12,7 @@ class ApiService {
   }
 
   Future<List<NewsModel>> fetchNewsByCategory(String category) async {
+    print('do');
     try {
       final url = ApiConstants.newsByCategoryUrl(category);
       final response = await _dio.get(url);
