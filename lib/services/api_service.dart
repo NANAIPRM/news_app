@@ -16,10 +16,14 @@ class ApiService {
       final url = ApiConstants.newsByCategoryUrl(category);
       final response = await _dio.get(url);
 
-      final List<dynamic> jsonResponse = response.data['items'];
-      return jsonResponse
-          .map((json) => NewsModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonResponse = response.data['items'];
+        return jsonResponse
+            .map((json) => NewsModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        throw Exception('Failed to load news: HTTP ${response.statusCode}');
+      }
     } on DioException catch (e) {
       throw Exception('Failed to load news: ${e.message}');
     }

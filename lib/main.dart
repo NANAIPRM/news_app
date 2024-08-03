@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:test_kobkiat/bloc/favorite_new/favorite_new_bloc.dart';
 import 'package:test_kobkiat/bloc/news/news_bloc.dart';
 import 'package:test_kobkiat/bloc/news/news_event.dart';
-import 'package:test_kobkiat/screen/home_page.dart';
+import 'package:test_kobkiat/screen/home_screen.dart';
 import 'package:test_kobkiat/services/database_helper.dart';
 import 'package:test_kobkiat/repositories/news_repository.dart';
 import 'package:test_kobkiat/services/api_service.dart';
@@ -37,14 +38,21 @@ class MyApp extends StatelessWidget {
         ),
       ),
       initial: AdaptiveThemeMode.dark,
-      builder: (theme, darkTheme) => BlocProvider(
-        create: (context) =>
-            NewsBloc(newsRepository)..add(const LoadNews('latest')),
+      builder: (theme, darkTheme) => MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) =>
+                NewsBloc(newsRepository)..add(const LoadNews('latest')),
+          ),
+          BlocProvider(
+            create: (context) => FavoriteNewsBloc(newsRepository),
+          ),
+        ],
         child: MaterialApp(
           theme: darkTheme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.dark,
-          home: const HomePage(),
+          home: const HomeScreen(),
         ),
       ),
     );

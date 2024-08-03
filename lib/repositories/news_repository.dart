@@ -1,4 +1,3 @@
-import 'package:logger/web.dart';
 import 'package:test_kobkiat/services/database_helper.dart';
 import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/services/api_service.dart';
@@ -9,22 +8,26 @@ class NewsRepository {
 
   NewsRepository(this._apiService, this._dbHelper);
 
-  final Logger _logger = Logger();
-
-  Future<List<NewsModel>> getNewsToday(String category) async {
+  Future<List<NewsModel>> getNewsTodayFromLocal(String category) async {
     try {
       final fetchedNewsList = await _apiService.fetchNewsByCategory(category);
 
-      if (fetchedNewsList.isNotEmpty) {
-        await _saveNewsToLocal(fetchedNewsList, category);
+      final existingNewsList = await _dbHelper.getNewsByCategoryToday(category);
 
-        final newsListToday = await _dbHelper.getNewsByCategoryToday(category);
-        return newsListToday;
-      } else {
-        return [];
+      final existingNewsTimestamps =
+          existingNewsList.map((news) => news.timestamp).toSet();
+
+      final newNewsList = fetchedNewsList
+          .where((news) => !existingNewsTimestamps.contains(news.timestamp))
+          .toList();
+
+      if (newNewsList.isNotEmpty) {
+        await _saveNewsToLocal(newNewsList, category);
       }
+
+      return await _dbHelper.getNewsByCategoryToday(category);
     } catch (e) {
-      return [];
+      return await _dbHelper.getNewsByCategoryToday(category);
     }
   }
 
@@ -35,12 +38,24 @@ class NewsRepository {
         await _dbHelper.insertNews(news, category);
       }
     } catch (e) {
-      _logger.e('Error saving news to local', error: {e});
+      throw Exception('Error saving news to local:  $e');
     }
   }
 
-  Future<List<NewsModel>> getNewsFromLocal(String category) async {
-    final newsList = await _dbHelper.getNewsByCategoryToday(category);
-    return newsList.isNotEmpty ? newsList : [];
+  Future<void> markAsFavorite(String timestamp) async {
+    try {
+      await _dbHelper.setFavorite(timestamp);
+    } catch (e) {
+      throw Exception('Error marking news as favorite: $e');
+    }
+  }
+
+  Future<List<NewsModel>> getFavoriteNews() async {
+    try {
+      final favoriteNews = await _dbHelper.getFavoriteNews();
+      return favoriteNews;
+    } catch (e) {
+      throw Exception('Error to get favorite news');
+    }
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:test_kobkiat/bloc/favorite_new/favorite_new_bloc.dart';
+import 'package:test_kobkiat/bloc/favorite_new/favorite_new_event.dart';
 import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/themes/constants.dart';
 
@@ -7,13 +10,16 @@ class NewsCard extends StatelessWidget {
   final NewsModel news;
   final Color cardColor;
   final VoidCallback onReadMore;
+  final VoidCallback onSaveFavoriteNews;
+  final bool? isFavorite;
 
-  const NewsCard({
-    super.key,
-    required this.news,
-    required this.cardColor,
-    required this.onReadMore,
-  });
+  const NewsCard(
+      {super.key,
+      required this.news,
+      required this.cardColor,
+      required this.onReadMore,
+      required this.onSaveFavoriteNews,
+      this.isFavorite});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +48,7 @@ class NewsCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 3,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               Text(
                 formatTimestamp(news.timestamp ?? ''),
                 style: TextStyle(
@@ -77,19 +83,38 @@ class NewsCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: onReadMore,
-                  child: Text(
-                    "Read More",
-                    style: TextStyle(
-                      color: primaryTextColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  isFavorite ?? false
+                      ? Container()
+                      : IconButton(
+                          onPressed: () {
+                            context.read<FavoriteNewsBloc>().add(
+                                  SaveFavoriteNews(news.timestamp ?? ''),
+                                );
+                          },
+                          icon: Icon(
+                            Icons.bookmark_add_sharp,
+                            color: primaryTextColor,
+                            size: 30.0,
+                          ),
+                        ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: onReadMore,
+                      child: Text(
+                        "Read More",
+                        style: TextStyle(
+                          color: primaryTextColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
