@@ -32,7 +32,6 @@ class DatabaseHelper {
   Future<void> insertNews(NewsModel news, String category) async {
     final db = await database;
 
-    // Convert Images and Subnews to JSON strings
     final imagesJson = news.images?.toJson();
     final subnewsJson = news.subnews?.map((s) => s.toJson()).toList();
 
@@ -67,6 +66,7 @@ class DatabaseHelper {
       'news',
       where: "category = ? AND timestamp BETWEEN ? AND ?",
       whereArgs: [category, startTimestamp, endTimestamp],
+      orderBy: "timestamp DESC",
     );
 
     return List.generate(maps.length, (i) {
@@ -93,25 +93,22 @@ class DatabaseHelper {
   Future<bool> hasTodayNews(String category) async {
     final db = await database;
 
-    // Get the current date and time
     final now = DateTime.now().toUtc();
     final startOfDay = DateTime(now.year, now.month, now.day).toUtc();
     final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59).toUtc();
 
-    // Convert to Unix Timestamp in milliseconds
     final startTimestamp = startOfDay.millisecondsSinceEpoch;
     final endTimestamp = endOfDay.millisecondsSinceEpoch;
 
-    // Perform a count query to check if there are any news items today
-    final count = await db.rawQuery(
-      'SELECT COUNT(*) FROM news WHERE category = ? AND timestamp BETWEEN ? AND ?',
-      [category, startTimestamp, endTimestamp],
+    final count = await db.query(
+      'news',
+      columns: ['COUNT(*)'],
+      where: 'category = ? AND timestamp BETWEEN ? AND ?',
+      whereArgs: [category, startTimestamp, endTimestamp],
     );
 
-    // The result is a list with a single map, so extract the count
     final numberOfItems = Sqflite.firstIntValue(count);
 
-    // Return true if there are any news items today, otherwise false
     return numberOfItems != 0;
   }
 }

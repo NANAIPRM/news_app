@@ -4,8 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:test_kobkiat/bloc/news/news_bloc.dart';
 import 'package:test_kobkiat/bloc/news/news_event.dart';
+import 'package:test_kobkiat/screen/home_page.dart';
 import 'package:test_kobkiat/services/database_helper.dart';
-import 'package:test_kobkiat/news_page.dart';
 import 'package:test_kobkiat/repositories/news_repository.dart';
 import 'package:test_kobkiat/services/api_service.dart';
 
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
           theme: darkTheme,
           darkTheme: darkTheme,
           themeMode: ThemeMode.dark,
-          home: const NewsPage(),
+          home: const HomePage(),
         ),
       ),
     );

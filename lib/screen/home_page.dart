@@ -1,36 +1,36 @@
+import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:test_kobkiat/bloc/news/news_bloc.dart';
 import 'package:test_kobkiat/bloc/news/news_event.dart';
 import 'package:test_kobkiat/bloc/news/news_state.dart';
+import 'package:test_kobkiat/themes/constants.dart';
+import 'package:test_kobkiat/widgets/news_card.dart';
 
-class NewsPage extends StatefulWidget {
-  const NewsPage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  _NewsPageState createState() => _NewsPageState();
+  State<StatefulWidget> createState() => _HomePageState();
 }
 
-class _NewsPageState extends State<NewsPage> {
+class _HomePageState extends State<HomePage> {
   String _selectedCategory = 'latest';
-
-  String formatTimestamp(String timestamp) {
-    final int milliseconds = int.tryParse(timestamp) ?? 0;
-    final dateTime =
-        DateTime.fromMillisecondsSinceEpoch(milliseconds, isUtc: true);
-    final localDateTime =
-        dateTime.toLocal(); // Convert to local time zone if needed
-    final formatter =
-        DateFormat('yyyy-MM-dd HH:mm:ss'); // Customize the format as needed
-    return formatter.format(localDateTime);
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('News'),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Text(
+            "News",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: titleTextColor,
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
@@ -53,7 +53,7 @@ class _NewsPageState extends State<NewsPage> {
                         onTap: () {
                           setState(() {
                             _selectedCategory = category;
-                            // Dispatch an event to fetch news based on the selected category
+
                             context
                                 .read<NewsBloc>()
                                 .add(LoadNews(_selectedCategory));
@@ -76,30 +76,37 @@ class _NewsPageState extends State<NewsPage> {
                   .toList(),
             ),
           ),
-          // News list
-          Expanded(
-            child: BlocBuilder<NewsBloc, NewsState>(
-              builder: (context, state) {
-                if (state.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state.news.isNotEmpty) {
-                  return ListView.builder(
+          BlocBuilder<NewsBloc, NewsState>(
+            builder: (context, state) {
+              if (state.loading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state.news.isNotEmpty) {
+                return SizedBox(
+                  height: 600,
+                  child: Swiper(
                     itemCount: state.news.length,
+                    itemWidth: MediaQuery.of(context).size.width,
+                    itemHeight: MediaQuery.of(context).size.height,
+                    layout: SwiperLayout.TINDER,
                     itemBuilder: (context, index) {
                       final news = state.news[index];
-                      return ListTile(
-                        title: Text(news.title ?? ''),
-                        subtitle: Text(formatTimestamp(news.timestamp ?? '')),
+                      Color cardColor = cardColors[index % cardColors.length];
+                      return NewsCard(
+                        news: news,
+                        cardColor: cardColor,
+                        onReadMore: () {
+                          // Handle Read More action
+                        },
                       );
                     },
-                  );
-                } else if (state.error.isNotEmpty) {
-                  return Center(child: Text('Error: ${state.error}'));
-                }
-                return const Center(child: Text('No news available'));
-              },
-            ),
-          ),
+                  ),
+                );
+              } else if (state.error.isNotEmpty) {
+                return Center(child: Text('Error: ${state.error}'));
+              }
+              return const Center(child: Text('No news available'));
+            },
+          )
         ],
       ),
     );
