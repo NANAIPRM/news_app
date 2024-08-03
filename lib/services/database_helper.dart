@@ -45,7 +45,7 @@ class DatabaseHelper {
         'timestamp': news.timestamp,
         'newsUrl': news.newsUrl,
         'images': imagesJson != null ? json.encode(imagesJson) : null,
-        'hasSubnews': news.hasSubnews ? 1 : 0,
+        'hasSubnews': (news.hasSubnews ?? false) ? 1 : 0,
         'subnews': subnewsJson != null ? json.encode(subnewsJson) : null,
         'category': category,
       },
@@ -53,13 +53,20 @@ class DatabaseHelper {
     );
   }
 
-  Future<List<NewsModel>> getNewsByCategory(String category) async {
+  Future<List<NewsModel>> getNewsByCategoryToday(String category) async {
     final db = await database;
+
+    final now = DateTime.now().toUtc();
+    final startOfDay = DateTime(now.year, now.month, now.day).toUtc();
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59).toUtc();
+
+    final startTimestamp = startOfDay.millisecondsSinceEpoch;
+    final endTimestamp = endOfDay.millisecondsSinceEpoch;
 
     final List<Map<String, dynamic>> maps = await db.query(
       'news',
-      where: "category = ?",
-      whereArgs: [category],
+      where: "category = ? AND timestamp BETWEEN ? AND ?",
+      whereArgs: [category, startTimestamp, endTimestamp],
     );
 
     return List.generate(maps.length, (i) {
@@ -81,5 +88,30 @@ class DatabaseHelper {
             : null,
       );
     });
+  }
+
+  Future<bool> hasTodayNews(String category) async {
+    final db = await database;
+
+    // Get the current date and time
+    final now = DateTime.now().toUtc();
+    final startOfDay = DateTime(now.year, now.month, now.day).toUtc();
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59).toUtc();
+
+    // Convert to Unix Timestamp in milliseconds
+    final startTimestamp = startOfDay.millisecondsSinceEpoch;
+    final endTimestamp = endOfDay.millisecondsSinceEpoch;
+
+    // Perform a count query to check if there are any news items today
+    final count = await db.rawQuery(
+      'SELECT COUNT(*) FROM news WHERE category = ? AND timestamp BETWEEN ? AND ?',
+      [category, startTimestamp, endTimestamp],
+    );
+
+    // The result is a list with a single map, so extract the count
+    final numberOfItems = Sqflite.firstIntValue(count);
+
+    // Return true if there are any news items today, otherwise false
+    return numberOfItems != 0;
   }
 }

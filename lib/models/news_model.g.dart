@@ -7,12 +7,12 @@ part of 'news_model.dart';
 // **************************************************************************
 
 NewsModel _$NewsModelFromJson(Map<String, dynamic> json) => NewsModel(
-      title: json['title'] as String,
-      snippet: json['snippet'] as String,
-      publisher: json['publisher'] as String,
-      timestamp: json['timestamp'] as String,
-      newsUrl: json['newsUrl'] as String,
-      hasSubnews: json['hasSubnews'] as bool,
+      title: json['title'] as String?,
+      snippet: json['snippet'] as String?,
+      publisher: json['publisher'] as String?,
+      timestamp: json['timestamp'] as String?,
+      newsUrl: json['newsUrl'] as String?,
+      hasSubnews: json['hasSubnews'] as bool?,
       images: json['images'] == null
           ? null
           : Images.fromJson(json['images'] as Map<String, dynamic>),
@@ -33,8 +33,8 @@ Map<String, dynamic> _$NewsModelToJson(NewsModel instance) => <String, dynamic>{
     };
 
 Images _$ImagesFromJson(Map<String, dynamic> json) => Images(
-      thumbnail: json['thumbnail'] as String,
-      thumbnailProxied: json['thumbnailProxied'] as String,
+      thumbnail: json['thumbnail'] as String?,
+      thumbnailProxied: json['thumbnailProxied'] as String?,
     );
 
 Map<String, dynamic> _$ImagesToJson(Images instance) => <String, dynamic>{
@@ -43,11 +43,11 @@ Map<String, dynamic> _$ImagesToJson(Images instance) => <String, dynamic>{
     };
 
 Subnews _$SubnewsFromJson(Map<String, dynamic> json) => Subnews(
-      title: json['title'] as String,
-      snippet: json['snippet'] as String,
-      publisher: json['publisher'] as String,
-      timestamp: json['timestamp'] as String,
-      newsUrl: json['newsUrl'] as String,
+      title: json['title'] as String?,
+      snippet: json['snippet'] as String?,
+      publisher: json['publisher'] as String?,
+      timestamp: json['timestamp'] as String?,
+      newsUrl: json['newsUrl'] as String?,
       images: json['images'] == null
           ? null
           : Images.fromJson(json['images'] as Map<String, dynamic>),

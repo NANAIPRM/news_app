@@ -4,22 +4,22 @@ part 'news_model.g.dart';
 
 @JsonSerializable()
 class NewsModel {
-  final String title;
-  final String snippet;
-  final String publisher;
-  final String timestamp;
-  final String newsUrl;
+  final String? title;
+  final String? snippet;
+  final String? publisher;
+  final String? timestamp;
+  final String? newsUrl;
   final Images? images;
-  final bool hasSubnews;
+  final bool? hasSubnews;
   final List<Subnews>? subnews;
 
   NewsModel({
-    required this.title,
-    required this.snippet,
-    required this.publisher,
-    required this.timestamp,
-    required this.newsUrl,
-    required this.hasSubnews,
+    this.title,
+    this.snippet,
+    this.publisher,
+    this.timestamp,
+    this.newsUrl,
+    this.hasSubnews,
     this.images,
     this.subnews,
   });
@@ -31,12 +31,12 @@ class NewsModel {
 
 @JsonSerializable()
 class Images {
-  final String thumbnail;
-  final String thumbnailProxied;
+  final String? thumbnail;
+  final String? thumbnailProxied;
 
   Images({
-    required this.thumbnail,
-    required this.thumbnailProxied,
+    this.thumbnail,
+    this.thumbnailProxied,
   });
 
   factory Images.fromJson(Map<String, dynamic> json) => _$ImagesFromJson(json);
@@ -45,19 +45,19 @@ class Images {
 
 @JsonSerializable()
 class Subnews {
-  final String title;
-  final String snippet;
-  final String publisher;
-  final String timestamp;
-  final String newsUrl;
+  final String? title;
+  final String? snippet;
+  final String? publisher;
+  final String? timestamp;
+  final String? newsUrl;
   final Images? images;
 
   Subnews({
-    required this.title,
-    required this.snippet,
-    required this.publisher,
-    required this.timestamp,
-    required this.newsUrl,
+    this.title,
+    this.snippet,
+    this.publisher,
+    this.timestamp,
+    this.newsUrl,
     this.images,
   });
 

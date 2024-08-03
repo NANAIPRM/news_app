@@ -3,6 +3,7 @@ import 'package:test_kobkiat/bloc/news/news_event.dart';
 import 'package:test_kobkiat/bloc/news/news_state.dart';
 import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/repositories/news_repository.dart';
+import 'package:test_kobkiat/services/database_helper.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {
   final NewsRepository _newsRepository;
@@ -14,13 +15,14 @@ class NewsBloc extends Bloc<NewsEvent, NewsState> {
   Future<void> _onLoadNews(LoadNews event, Emitter<NewsState> emit) async {
     try {
       emit(state.copyWith(loading: true));
+      final databaseHelper = DatabaseHelper();
+      final hasTodayNews = await databaseHelper.hasTodayNews(event.category);
 
       List<NewsModel> newsList =
           await _newsRepository.getNewsFromLocal(event.category);
-      print('eiei:${newsList}');
 
-      if (newsList.isEmpty) {
-        newsList = await _newsRepository.getNews(event.category);
+      if (newsList.isEmpty || !hasTodayNews) {
+        newsList = await _newsRepository.getNewsToday(event.category);
       }
 
       emit(state.copyWith(loading: false, news: newsList));

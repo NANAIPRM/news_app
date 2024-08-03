@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:test_kobkiat/bloc/news/news_bloc.dart';
 import 'package:test_kobkiat/bloc/news/news_event.dart';
 import 'package:test_kobkiat/bloc/news/news_state.dart';
@@ -13,6 +14,17 @@ class NewsPage extends StatefulWidget {
 
 class _NewsPageState extends State<NewsPage> {
   String _selectedCategory = 'latest';
+
+  String formatTimestamp(String timestamp) {
+    final int milliseconds = int.tryParse(timestamp) ?? 0;
+    final dateTime =
+        DateTime.fromMillisecondsSinceEpoch(milliseconds, isUtc: true);
+    final localDateTime =
+        dateTime.toLocal(); // Convert to local time zone if needed
+    final formatter =
+        DateFormat('yyyy-MM-dd HH:mm:ss'); // Customize the format as needed
+    return formatter.format(localDateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +88,8 @@ class _NewsPageState extends State<NewsPage> {
                     itemBuilder: (context, index) {
                       final news = state.news[index];
                       return ListTile(
-                        title: Text(news.title),
-                        subtitle: Text(news.snippet),
+                        title: Text(news.title ?? ''),
+                        subtitle: Text(formatTimestamp(news.timestamp ?? '')),
                       );
                     },
                   );

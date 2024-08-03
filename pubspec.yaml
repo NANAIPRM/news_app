@@ -36,7 +36,9 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.6
   google_fonts: ^6.2.1
+  intl: ^0.19.0
   json_annotation: ^4.9.0
+  logger: ^2.4.0
   path: ^1.9.0
   path_provider: ^2.1.4
   sqflite: ^2.3.3+1
@@ -74,6 +76,5 @@ flutter:
     - family: ABeeZee
       fonts:
         - asset: lib/assets/fonts/ABeeZee-Regular.ttf
-  
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
