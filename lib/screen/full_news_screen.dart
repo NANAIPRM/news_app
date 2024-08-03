@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_kobkiat/bloc/favorite_new/favorite_new_bloc.dart';
 import 'package:test_kobkiat/bloc/favorite_new/favorite_new_event.dart';
 import 'package:test_kobkiat/models/news_model.dart';
-import 'package:test_kobkiat/screen/favorite_news_sceen.dart';
 import 'package:test_kobkiat/screen/web_view_screen.dart';
 import 'package:test_kobkiat/themes/constants.dart';
 import 'package:test_kobkiat/widgets/news_card.dart';
