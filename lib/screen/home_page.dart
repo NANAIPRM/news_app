@@ -17,6 +17,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String _selectedCategory = 'latest';
 
+  void _onCategoryTap(String category) {
+    setState(() {
+      _selectedCategory = category;
+      context.read<NewsBloc>().add(LoadNews(_selectedCategory));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,80 +41,102 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 60.0,
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                'latest',
-                'entertainment',
-                'world',
-                'business',
-                'health',
-                'sport',
-                'science',
-                'technology'
-              ]
-                  .map((category) => GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = category;
-
-                            context
-                                .read<NewsBloc>()
-                                .add(LoadNews(_selectedCategory));
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          alignment: Alignment.center,
-                          child: Text(
-                            category[0].toUpperCase() + category.substring(1),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize:
-                                  _selectedCategory == category ? 18.0 : 14.0,
-                            ),
-                          ),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-          BlocBuilder<NewsBloc, NewsState>(
-            builder: (context, state) {
-              if (state.loading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state.news.isNotEmpty) {
-                return SizedBox(
-                  height: 600,
-                  child: Swiper(
-                    itemCount: state.news.length,
-                    itemWidth: MediaQuery.of(context).size.width,
-                    itemHeight: MediaQuery.of(context).size.height,
-                    layout: SwiperLayout.TINDER,
-                    itemBuilder: (context, index) {
-                      final news = state.news[index];
-                      Color cardColor = cardColors[index % cardColors.length];
-                      return NewsCard(
-                        news: news,
-                        cardColor: cardColor,
-                        onReadMore: () {
-                          // Handle Read More action
-                        },
-                      );
-                    },
-                  ),
-                );
-              } else if (state.error.isNotEmpty) {
-                return Center(child: Text('Error: ${state.error}'));
-              }
-              return const Center(child: Text('No news available'));
-            },
-          )
+          _buildCategorySelector(),
+          _buildNewsContent(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategorySelector() {
+    final categories = [
+      'latest',
+      'entertainment',
+      'world',
+      'business',
+      'health',
+      'sport',
+      'science',
+      'technology'
+    ];
+
+    return Container(
+      height: 60.0,
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: categories.map((category) {
+          return _CategoryItem(
+            category: category,
+            isSelected: _selectedCategory == category,
+            onTap: () => _onCategoryTap(category),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildNewsContent() {
+    return BlocBuilder<NewsBloc, NewsState>(
+      builder: (context, state) {
+        if (state.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.news.isNotEmpty) {
+          return SizedBox(
+            height: 600,
+            child: Swiper(
+              itemCount: state.news.length,
+              itemWidth: MediaQuery.of(context).size.width,
+              itemHeight: MediaQuery.of(context).size.height,
+              layout: SwiperLayout.TINDER,
+              itemBuilder: (context, index) {
+                final news = state.news[index];
+                Color cardColor = cardColors[index % cardColors.length];
+                return NewsCard(
+                  news: news,
+                  cardColor: cardColor,
+                  onReadMore: () {
+                    // Handle Read More action
+                  },
+                );
+              },
+            ),
+          );
+        } else if (state.error.isNotEmpty) {
+          return Center(child: Text('Error: ${state.error}'));
+        }
+        return const Center(child: Text('No news available'));
+      },
+    );
+  }
+}
+
+class _CategoryItem extends StatelessWidget {
+  final String category;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _CategoryItem({
+    required this.category,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        alignment: Alignment.center,
+        child: Text(
+          category[0].toUpperCase() + category.substring(1),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: isSelected ? 18.0 : 14.0,
+          ),
+        ),
       ),
     );
   }
