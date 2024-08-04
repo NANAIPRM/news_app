@@ -1,6 +1,8 @@
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:test_kobkiat/bloc/favorite_new/favorite_new_bloc.dart';
+import 'package:test_kobkiat/bloc/favorite_new/favorite_new_event.dart';
 import 'package:test_kobkiat/bloc/news/news_bloc.dart';
 import 'package:test_kobkiat/bloc/news/news_event.dart';
 import 'package:test_kobkiat/bloc/news/news_state.dart';
@@ -47,7 +49,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const FavoriteNewsScreen()),
+                  builder: (context) => const FavoriteNewsScreen(),
+                ),
               );
             },
           ),
@@ -56,7 +59,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           _buildCategorySelector(),
-          _buildNewsContent(),
+          Expanded(
+            child: Center(
+              child: _buildNewsContent(),
+            ),
+          ),
         ],
       ),
     );
@@ -111,20 +118,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   final news = state.news[index];
                   Color cardColor = cardColors[index % cardColors.length];
                   return NewsCard(
-                      news: news,
-                      cardColor: cardColor,
-                      onReadMore: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FullNewsScreen(
-                              news: news,
-                              cardColor: cardColor,
-                            ),
+                    news: news,
+                    cardColor: cardColor,
+                    onReadMore: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullNewsScreen(
+                            news: news,
+                            cardColor: cardColor,
                           ),
-                        );
-                      },
-                      onSaveFavoriteNews: () {});
+                        ),
+                      );
+                    },
+                    onSaveFavoriteNews: () async {
+                      context.read<FavoriteNewsBloc>().add(
+                            SaveFavoriteNews(news.timestamp ?? ''),
+                          );
+
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      if (!context.mounted) return;
+
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Success'),
+                            content:
+                                const Text('News has been saved to favorites.'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: const Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
                 },
               ),
             );

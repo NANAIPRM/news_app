@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:test_kobkiat/bloc/favorite_new/favorite_new_bloc.dart';
-import 'package:test_kobkiat/bloc/favorite_new/favorite_new_event.dart';
 import 'package:test_kobkiat/models/news_model.dart';
 import 'package:test_kobkiat/themes/constants.dart';
 
@@ -24,7 +21,7 @@ class NewsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 400,
+      height: MediaQuery.of(context).size.height,
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(
@@ -71,16 +68,16 @@ class NewsCard extends StatelessWidget {
                     )
                   : Container(),
               const SizedBox(height: 16),
-              Flexible(
-                child: Text(
-                  news.snippet ?? '',
-                  style: TextStyle(
-                    color: primaryTextColor,
-                    fontWeight: FontWeight.w400,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.left,
+              Text(
+                news.snippet ?? '',
+                style: TextStyle(
+                  color: primaryTextColor,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
                 ),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
               const SizedBox(height: 16),
               Row(
@@ -89,11 +86,7 @@ class NewsCard extends StatelessWidget {
                   isFavorite ?? false
                       ? Container()
                       : IconButton(
-                          onPressed: () {
-                            context.read<FavoriteNewsBloc>().add(
-                                  SaveFavoriteNews(news.timestamp ?? ''),
-                                );
-                          },
+                          onPressed: onSaveFavoriteNews,
                           icon: Icon(
                             Icons.bookmark_add_sharp,
                             color: primaryTextColor,

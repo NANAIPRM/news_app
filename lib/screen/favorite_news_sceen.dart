@@ -1,4 +1,3 @@
-import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_kobkiat/bloc/favorite_new/favorite_new_bloc.dart';
@@ -19,53 +18,56 @@ class FavoriteNewsScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Favorite News'),
       ),
-      body: BlocBuilder<FavoriteNewsBloc, FavoriteNewsState>(
-        builder: (context, state) {
-          if (state.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.error.isNotEmpty) {
-            return Center(child: Text('Error: ${state.error}'));
-          }
-
-          if (state.favoriteNews.isEmpty) {
-            return const Center(child: Text('No favorite news found.'));
-          }
-
-          return Center(
-            child: SizedBox(
-              height: 600,
-              child: Swiper(
-                itemCount: state.favoriteNews.length,
-                itemWidth: MediaQuery.of(context).size.width * 0.9,
-                itemHeight: MediaQuery.of(context).size.height,
-                layout: SwiperLayout.STACK,
-                axisDirection: AxisDirection.right,
-                itemBuilder: (context, index) {
-                  final news = state.favoriteNews[index];
-                  Color cardColor = cardColors[index % cardColors.length];
-                  return NewsCard(
-                      news: news,
-                      cardColor: cardColor,
-                      isFavorite: true,
-                      onReadMore: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => FullNewsScreen(
-                              news: news,
-                              cardColor: cardColor,
-                            ),
+      body: Center(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: BlocBuilder<FavoriteNewsBloc, FavoriteNewsState>(
+            builder: (context, state) {
+              if (state.loading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state.favoriteNews.isNotEmpty) {
+                return ListView.builder(
+                  itemCount: state.favoriteNews.length,
+                  itemBuilder: (context, index) {
+                    final news = state.favoriteNews[index];
+                    Color cardColor = cardColors[index % cardColors.length];
+                    double rotationAngle = (index % 2 == 0) ? -0.05 : 0.05;
+                    return Transform.rotate(
+                      angle: rotationAngle,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 18, right: 18),
+                        child: SizedBox(
+                          height: 600,
+                          child: NewsCard(
+                            isFavorite: true,
+                            news: news,
+                            cardColor: cardColor,
+                            onReadMore: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FullNewsScreen(
+                                    news: news,
+                                    cardColor: cardColor,
+                                  ),
+                                ),
+                              );
+                            },
+                            onSaveFavoriteNews: () {},
                           ),
-                        );
-                      },
-                      onSaveFavoriteNews: () {});
-                },
-              ),
-            ),
-          );
-        },
+                        ),
+                      ),
+                    );
+                  },
+                );
+              } else if (state.error.isNotEmpty) {
+                return Center(child: Text('Error: ${state.error}'));
+              }
+              return const Center(child: Text('No news available'));
+            },
+          ),
+        ),
       ),
     );
   }

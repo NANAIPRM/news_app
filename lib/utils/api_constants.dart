@@ -7,7 +7,7 @@ class ApiConstants {
 
   static const String rapidApiHost = 'google-news13.p.rapidapi.com';
   static const String rapidApiKey =
-      '4a8368073bmshbc6dbf58e3bff2bp1a4b4ajsn4581e611c513';
+      'c0a49fe0c5mshb82dcc166427edep14eff1jsnec6ea179a150';
 
   static String newsByCategoryUrl(String category) {
     return '$baseUrl${newsByCategoryEndpoint(category)}';
